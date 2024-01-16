@@ -2,15 +2,48 @@ version: '3'
 
 services:
   database:
+    networks:
+      - network
+    ports:
+      - "5432:5432"
     build: ./database
+    healthcheck:
+      test: [ "CMD-SHELL", "psql --username=omlaut_docker_database_user --dbname=omlaut_docker_database" ]
+      interval: 5s
+      timeout: 5s
+      retries: 100
+#    volumes:
+#      - database_volume
     # Дополнительные настройки для базы данных
 
   server:
     build: ./server
+    depends_on:
+      database:
+        condition: service_healthy
+    networks:
+      - network
+    ports:
+      - "443:5000"
+    environment:
+      DATABASE_HOST: database
+      DATABASE_USER: ${DATABASE_USER}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      DATABASE_NAME: ${DATABASE_NAME}
+      DATABASE_PORT: 5432
     # Дополнительные настройки для сервера
 
   user:
     build: ./user
+    depends_on:
+    - server
     ports:
-      - "500:9050"
+      - "9050:9050"
+    environment:
+      SERVER_HOST: server
+      SERVER_PORT: 443
     # Дополнительные настройки для фронтенда
+
+networks:
+  network:
+    driver: bridge

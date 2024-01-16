@@ -16,7 +16,7 @@ RUN npm install
 COPY . .
 
 # Собираем ваше приложение
-RUN npm run build
+#RUN npm run build
 
 ENV PORT=$PORT
 

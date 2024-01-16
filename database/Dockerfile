@@ -1,24 +1,11 @@
 FROM postgres:latest
 
-COPY init.sql /docker-entrypoint-initdb.d
-# COPY ./my-custom-postgresql.conf /etc/postgresql/postgresql.conf
+ENV POSTGRES_USER=${DATABASE_USER:-"no"}
+ENV POSTGRES_PASSWORD=${DATABASE_PASSWORD:-"no"}
+ENV POSTGRES_DB=${DATABASE_NAME:-"no"}
 
-# On making image
-# RUN
+COPY init.sql /docker-entrypoint-initdb.d/
 
-# On making kontainer
-# ENTRYPOINT ["comand"]
-#CMD ["argument]
+RUN chmod 755 /docker-entrypoint-initdb.d/init.sql
 
-#CMD ["comand", "argument"]
-ENV POSTGRES_USER=omlaut_docker_database_user
-ENV POSTGRES_PASSWORD=omlaut_docker_database_password
-ENV POSTGRES_DB=omlaut_docker_database
-
-EXPOSE 5432
-
-# COPY ./init-scripts /docker-entrypoint-initdb.d/
-
-
-
-CMD ["postgres"]
+EXPOSE 5432:5432

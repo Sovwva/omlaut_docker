@@ -11,7 +11,7 @@ import { Link } from "react-router-dom";
 function Header() {
 
     useEffect(() => {
-        fetch('http://192.168.1.103:5000/')
+        fetch('http://192.168.1.101:443/user')
             .then(response => response.text())
             .then(data => console.log(data))
             .catch(error => console.error('Произошла ошибка:', error));
