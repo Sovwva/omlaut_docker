@@ -10,6 +10,11 @@ COPY package*.json ./
 # Устанавливаем зависимости
 RUN npm install
 
+#ENV DATABASE_USER=${DATABASE_USER}
+#ENV DATABASE_PASSWORD=${DATABASE_PASSWORD}
+#ENV DATABASE_NAME=${DATABASE_NAME}
+#ENV DATABASE_PORT=5432
+
 # Копируем все остальные файлы проекта в контейнер
 COPY . .
 

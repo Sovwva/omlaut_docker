@@ -44,6 +44,9 @@ services:
       SERVER_PORT: 443
     # Дополнительные настройки для фронтенда
 
+    env_file:
+      - .env
+
 networks:
   network:
     driver: bridge

@@ -1,8 +1,8 @@
 FROM postgres:latest
 
-ENV POSTGRES_USER=${DATABASE_USER:-"no"}
-ENV POSTGRES_PASSWORD=${DATABASE_PASSWORD:-"no"}
-ENV POSTGRES_DB=${DATABASE_NAME:-"no"}
+ENV POSTGRES_USER=omlaut_docker_database_user
+ENV POSTGRES_PASSWORD=omlaut_docker_database_password
+ENV POSTGRES_DB=omlaut_docker_database
 
 COPY init.sql /docker-entrypoint-initdb.d/
 
