@@ -16,7 +16,7 @@ DO $$
                                                 email VARCHAR(255) NOT NULL UNIQUE,
                                                 username VARCHAR(100) NOT NULL UNIQUE,
                                                 password VARCHAR(255) NOT NULL,
-                                                is_admin BOOLEAN NOT NULL
+                                                is_admin BOOLEAN NOT NULL DEFAULT false
             );
             RAISE NOTICE 'Создана таблица users_schema.users';
         ELSE
