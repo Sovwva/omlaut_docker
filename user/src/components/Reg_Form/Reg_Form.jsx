@@ -16,10 +16,9 @@ function Reg_Form() {
   const onSubmit = async (data) => {
     try {
       const RegData = {
-        login: data.login,
+        email: data.email,
+        username: data.username,
         password: data.password,
-        firstName: data.firstName,
-        lastName: data.lastName,
       };
 
       const RegResponse = await axios
@@ -45,8 +44,13 @@ function Reg_Form() {
       <form onSubmit={handleSubmit(onSubmit)}>
         <label>
           Email
-          <input type="email" {...register("login", { required: true })} />
+          <input type="email" {...register("email", { required: true })} />
           <div className="error">{errors?.login && <p>Error!</p>}</div>
+        </label>
+        <label>
+          Username
+          <input type="text" {...register("username", { required: true })} />
+          <div className="error">{errors?.username && <p>Error!</p>}</div>
         </label>
         <label>
           Password
@@ -55,16 +59,6 @@ function Reg_Form() {
             {...register("password", { required: true })}
           />
           <div className="error">{errors?.password && <p>Error!</p>}</div>
-        </label>
-        <label>
-          First name
-          <input type="text" {...register("firstName", { required: true })} />
-          <div className="error">{errors?.firstname && <p>Error!</p>}</div>
-        </label>
-        <label>
-          Last Name
-          <input type="text" {...register("lastName", { required: true })} />
-          <div className="error">{errors?.lastname && <p>Error!</p>}</div>
         </label>
         <input type="submit" />
       </form>
