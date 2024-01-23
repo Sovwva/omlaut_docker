@@ -1,9 +1,10 @@
 import pool from "../initdb.js";
+import {json} from "express";
 
 
 class User_database {
     async create(email, login, password) {
-        const sql = `INSERT INTO users_schema.users (email, password, username)
+        const sql = `INSERT INTO users_schema.users (email, username, password)
             VALUES ($1, $2, $3)`
 
         const values = [email, login, password];
@@ -16,14 +17,18 @@ class User_database {
 
     async getUser(EmailOrLogin) {
         const sql = `
-        SELECT
+        SELECT *
         FROM users_schema.users
         WHERE email = $1 OR username = $1
+        LIMIT 1
         `;
 
         const values = [EmailOrLogin];
+        console.log('values', values)
 
-        return await pool.query(sql, values)
+       const val = await pool.query(sql, values)
+        return val
+
     }
 
     async updatePassword(EmailOrLogin, NewPassword) {
