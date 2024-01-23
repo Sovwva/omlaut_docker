@@ -21,21 +21,18 @@ function Reg_Form() {
         password: data.password,
       };
 
-      const RegResponse = await axios
-        .post(
-          process.env.SERVER_HOST + process.env.SERVER_PORT + "/user/create/",
-          RegData
-        )
-        .then((response) => {
-          console.log(response);
-          if (response.status === 200) {
-            <Navigate to={"/login"} />;
-          } else {
-            console.error(error);
-          }
+      console.log("SERVER_HOST:", process.env.SERVER_HOST);
+      const RegResponse = await axios.post(
+        `http://localhost:443/user/create`,
+        RegData
+      );
 
-          RegResponse();
-        });
+      if (RegResponse.status === 200) {
+        console.log("Registration successful");
+        // Добавьте навигацию после успешной регистрации
+      } else {
+        console.error("Registration failed");
+      }
     } catch (error) {
       console.error(error);
     }
