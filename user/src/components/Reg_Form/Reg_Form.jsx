@@ -22,8 +22,12 @@ function Reg_Form() {
       };
 
       const RegResponse = await axios
-        .post(BaseUrlUser + "user/create", RegData)
+        .post(
+          process.env.SERVER_HOST + process.env.SERVER_PORT + "/user/create/",
+          RegData
+        )
         .then((response) => {
+          console.log(response);
           if (response.status === 200) {
             <Navigate to={"/login"} />;
           } else {
