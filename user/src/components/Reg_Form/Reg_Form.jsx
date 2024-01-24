@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import "./Reg_Form.css"; // Подключаем CSS файл
 import { BaseUrlUser } from "../../config";
-import { Navigate } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import axios from "axios";
 
 function Reg_Form() {
@@ -63,6 +63,9 @@ function Reg_Form() {
         </label>
         <input type="submit" />
       </form>
+      <Link to="/Login" className="no-underline">
+        Already have an account? Sign in
+      </Link>
     </div>
   );
 }
