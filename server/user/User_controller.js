@@ -1,33 +1,11 @@
 import User_database from "./User_database.js"
+import bcrypt from "bcrypt"
+import TokenService from "./auth.js";
+import json from "express";
+import user_database from "./User_database.js";
 
 
 class User_controller {
-    async create(req, res) {
-
-        console.log('catch create user')
-
-        try {
-            console.log(req.body)
-            const {email, username, password} = req.body;
-
-            console.log(req.body)
-            console.log(email, username, password)
-
-            if (!email || !username || !password) {
-                res.status(400).json({message: 'Not enough information'})
-            }
-
-            try {
-                await User_database.create(email, username, password);
-                res.status(200).json({message: 'User created successfully, more likely'})
-            } catch (e) {
-                res.status(500).json({message: 'database error'})
-            }
-
-        } catch (e) {
-            res.status(500)
-        }
-    }
 
     async get(req, res) {
 
@@ -36,29 +14,94 @@ class User_controller {
         try {
             const username = req.query.username;
 
-            if (username === undefined || !username || username === {} ) {
+            if (!username) {
                 console.log('not found')
                 res.status(400).json({ message: 'Username incorrect' });
             }
 
             const user = await User_database.getUser(username);
 
-            if (user === undefined || !user || user === {} ) {
+            if (user === null ) {
                 console.log('not found')
                 res.status(400).json({ message: 'User not found' });
+                return null
             }
-
-            console.log("user", user)
-            console.log('found')
 
 
             res.status(200).json(user.rows[0])
-
+            return user.rows[0]
         } catch (error) {
             res.status(500).json({error:error})
         }
-        return undefined
+        return null
     }
+
+    async create(req, res) {
+
+        console.log('catch create user')
+
+
+
+        try {
+            const {email, username, password} = req.body;
+
+            if (!email || !username || !password) {
+                res.status(400).json({message: 'Not enough information'})
+            }
+
+            try {
+                const hashedPassword = bcrypt.hashSync(password, 8)
+                const user = await User_database.create(email, username, hashedPassword);
+                if (user.error) {
+                    res.status(409).json({
+                        message: user.error
+                    })
+                } else {
+                    res.status(200).json({
+                                        message: user.rows[0]
+                                    })
+                    console.log(Date().toString(), `created user ${user}`)
+                } } catch (e) {
+                res.status(500).json({message: 'database error'})
+                console.error(e)
+            }
+        } catch (e) {
+            res.status(500).json({message: e})
+        }
+    }
+
+    async login(req, res) {
+        try {
+            const {username, password} = req.body;
+            const user = await user_database.getUser(username);
+            if (user.rows.length === 0) {
+               res.status(400).json({message: "User not found"})
+            } else {
+                const hashedPasswordFromDB = user.rows[0].password;
+                if (bcrypt.compareSync(password, hashedPasswordFromDB)) {
+                    const payload = {username, password}
+                    const accessToken = await TokenService.genereteAccessToken(payload)
+                    res.status(200).json({accessToken: accessToken });
+                } else {
+                    res.status(400).json({message: "password is not valid"})
+                }
+            }
+        } catch (e) {
+            res.status(500).json({message: e})
+        }
+    }
+
+    async ChangePassword(req, res) {
+
+    }
+
+    // async logOut(req, res) {
+    //
+    // }
+    //
+    // async refresh() {
+    //
+    // }
 
 }
 
