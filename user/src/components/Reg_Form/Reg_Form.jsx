@@ -21,9 +21,9 @@ function Reg_Form() {
         password: data.password,
       };
 
-      console.log("SERVER_HOST:", process.env.SERVER_HOST);
+      console.log("SERVER_HOST:", process.env.REACT_APP_SERVER_HOST);
       const RegResponse = await axios.post(
-        `http://localhost:443/user/create`,
+        `http://${process.env.REACT_APP_SERVER_HOST}:${process.env.REACT_APP_SERVER_PORT}/user/create`,
         RegData
       );
 
