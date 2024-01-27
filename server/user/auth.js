@@ -22,7 +22,7 @@ class TokenService {
             return res.status(403).json({message: "Token not provided"});
         }
 
-        jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decode) => {
+        jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
             if (err) {
                 return res.status(401).json({message: "Failed to authentication"})
             }

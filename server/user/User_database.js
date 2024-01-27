@@ -26,7 +26,6 @@ class User_database {
 
             return ret;
         } catch (e) {
-            // response.status(500).json({message: e})
             await client.query('ROLLBACK');
             console.error('Database error:', e);
             return { error: 'Database error' };
@@ -49,56 +48,57 @@ class User_database {
         return val
 
     }
-    //
-    // async updatePassword(username, NewPassword) {
-    //
-    //     const sql = `
-    //             UPDATE users_schema.users
-    //             SET password = $2
-    //             WHERE username = $1
-    //         `;
-    //
-    //     const values = [username, NewPassword]
-    //
-    //     const client = await pool.connect();
-    //     try {
-    //
-    //         await client.query('BEGIN');
-    //
-    //         await client.query(sql, values)
-    //
-    //         const user = await this.getUser(username);
-    //         await client.query('COMMIT');
-    //
-    //         return user;
-    //     } catch (err) {
-    //         await client.query('ROLLBACK');
-    //         throw err;
-    //     } finally {
-    //         await client.release();
-    //     }
-    // }
-    //
-    // async delete(username, password) {
-    //     const sql = `
-    //     DELETE
-    //     FROM users_schema.users
-    //     WHERE (username = $1)`
-    //
-    //     const values = [username, password]
-    //
-    //     const client = await pool.connect();
-    //
-    //     try {
-    //         await client.query('BEGIN');
-    //
-    //
-    //         pool.query(sql, values)
-    //     } catch (e) {
-    //         console.log(e)
-    //     }
-    //
-    // }
+
+    async updatePassword(username, NewPassword) {
+
+        const sql = `
+                UPDATE users_schema.users
+                SET password = $2
+                WHERE username = $1
+            `;
+
+        const values = [username, NewPassword]
+
+        const client = await pool.connect();
+        try {
+
+            await client.query('BEGIN');
+
+            await client.query(sql, values)
+
+            const user = await this.getUser(username);
+            await client.query('COMMIT');
+
+            return user;
+        } catch (err) {
+            await client.query('ROLLBACK');
+            console.error('Database error:', e);
+            return { error: 'Database error' };
+        } finally {
+            await client.release();
+        }
+    }
+
+    async delete(username, password) {
+        const sql = `
+        DELETE
+        FROM users_schema.users
+        WHERE (username = $1)`
+
+        const values = [username, password]
+
+        const client = await pool.connect();
+
+        try {
+            await client.query('BEGIN');
+
+
+            pool.query(sql, values)
+        } catch (e) {
+            console.log(e)
+        }
+
+    }
 
 
 

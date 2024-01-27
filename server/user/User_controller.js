@@ -79,7 +79,7 @@ class User_controller {
             } else {
                 const hashedPasswordFromDB = user.rows[0].password;
                 if (bcrypt.compareSync(password, hashedPasswordFromDB)) {
-                    const payload = {username, password}
+                    const payload = {username}
                     const accessToken = await TokenService.genereteAccessToken(payload)
                     res.status(200).json({accessToken: accessToken });
                 } else {
@@ -92,6 +92,22 @@ class User_controller {
     }
 
     async ChangePassword(req, res) {
+        try {
+            const {newPassword} = req.body;
+            const {username} = req.user;
+            if (!newPassword || !username) {
+                res.status(400).json({message: "not all data was provided"})
+                return
+            }
+            const user = await user_database.updatePassword(username, newPassword)
+            if (user.error) {
+                res.status(500).json({message: "something went wrong"})
+            } else {
+                res.status(200).json({message: "Password was changes"})
+            }
+        } catch (e) {
+            res.status(500).json({message: e})
+        }
 
     }
 
