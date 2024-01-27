@@ -60,7 +60,7 @@ class User_controller {
                     res.status(200).json({
                                         message: user.rows[0]
                                     })
-                    console.log(Date().toString(), `created user ${user}`)
+                    console.log(Date().toString(), `created user ${user.rows[0]}`)
                 } } catch (e) {
                 res.status(500).json({message: 'database error'})
                 console.error(e)
@@ -97,18 +97,32 @@ class User_controller {
             const {username} = req.user;
             if (!newPassword || !username) {
                 res.status(400).json({message: "not all data was provided"})
-                return
-            }
-            const user = await user_database.updatePassword(username, newPassword)
-            if (user.error) {
-                res.status(500).json({message: "something went wrong"})
             } else {
-                res.status(200).json({message: "Password was changes"})
+                const user = await user_database.updatePassword(username, newPassword)
+                if (user.error) {
+                    res.status(500).json({message: "something went wrong"})
+                } else {
+                    res.status(200).json({message: "Password was changes"})
+                }
             }
         } catch (e) {
             res.status(500).json({message: e})
         }
 
+    }
+
+    async delete(req, res) {
+        try {
+            const user = await user_database.delete(req.user.username)
+            if (user.error) {
+                console.log(user.error)
+                res.status(400).json({message: "something went wrong"})
+            } else {
+                res.status(200).json({message: `user ${user.rows[0]} deleted`})
+            }
+        } catch (e) {
+            res.status(500).json({message: e})
+        }
     }
 
     // async logOut(req, res) {

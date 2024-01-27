@@ -79,23 +79,35 @@ class User_database {
         }
     }
 
-    async delete(username, password) {
+    async delete(username) {
         const sql = `
         DELETE
         FROM users_schema.users
-        WHERE (username = $1)`
+        WHERE (username = $1)`;
 
-        const values = [username, password]
+        const values = [username]
 
         const client = await pool.connect();
 
         try {
             await client.query('BEGIN');
 
+            const user = await this.getUser(username);
 
-            pool.query(sql, values)
+            if (user.rows.length === 0) {
+                await client.query('ROLLBACK');
+                return { error: 'User not found' };
+            }
+
+            await client.query(sql, values);
+            await client.query('COMMIT');
+            return user
         } catch (e) {
-            console.log(e)
+            await client.query('ROLLBACK');
+            console.error('DATABASE error:', e);
+            return {error: 'Database error'};
+        } finally {
+            await client.release();
         }
 
     }
