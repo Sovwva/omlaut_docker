@@ -58,6 +58,7 @@ DO $$
         IF NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'products_schema' AND table_name = 'products') THEN
             CREATE TABLE products_schema.products (
                                                       id SERIAL PRIMARY KEY,
+                                                      name TEXT NOT NULL,
                                                       user_id INTEGER NOT NULL REFERENCES users_schema.users (id),
                                                       photo BYTEA,
                                                       quantity INTEGER NOT NULL DEFAULT 0,
