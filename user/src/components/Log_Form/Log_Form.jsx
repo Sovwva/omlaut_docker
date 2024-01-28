@@ -8,6 +8,7 @@ import axios from "axios";
 function Log_Form() {
   const [error, setError] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const navigate = useNavigate();
 
   const {
     register,
@@ -18,31 +19,30 @@ function Log_Form() {
   const onSubmit = async (data) => {
     try {
       const LogData = {
-        login: data.login,
+        username: data.username,
         password: data.password,
       };
 
-      const loginResponse = await axios
-        .post(BaseUrlUser + "user/login", LogData)
-        .then((response) => {
-          if (response.status === 200) {
-            window.location.reload();
-            <Navigate to={"/"} />;
-          } else {
-            setError(response.request);
-            console.error(error);
-          }
-          const accessToken = loginResponse.data.accessToken;
-          localStorage.setItem("accessToken", accessToken);
-          setIsLoggedIn(true);
-        });
+      const LogResponse = await axios.post(
+        `http://${process.env.REACT_APP_SERVER_HOST}:${process.env.REACT_APP_SERVER_PORT}/user/login`,
+         LogData
+        );
+
+      if (LogResponse.status === 200) {
+        const accessToken = LogResponse.data.accessToken;
+        localStorage.setItem("accessToken", accessToken);
+        setIsLoggedIn(true);
+        navigate("/");
+      } else {
+        setError(LogResponse.request);
+      }
     } catch (error) {
       console.log(error);
+      setError("An error occured during login")
     }
   };
 
   if (isLoggedIn) {
-    window.location.reload();
     return <Navigate to={"/"} />;
   }
 
@@ -52,16 +52,13 @@ function Log_Form() {
       {error && <p>{error}</p>}
       <form onSubmit={handleSubmit(onSubmit)}>
         <label>
-          Email
-          <input type="email" {...register("login", { required: true })} />
-          <div className="error">{errors?.login && <p>Error!</p>}</div>
+          Username
+          <input type="text" {...register("username", { required: true })} />
+          <div className="error">{errors?.username && <p>Error!</p>}</div>
         </label>
         <label>
           Password
-          <input
-            type="password"
-            {...register("password", { required: true })}
-          />
+          <input type="password" {...register("password", { required: true })} />
           <div className="error">{errors?.password && <p>Error!</p>}</div>
         </label>
         <input type="submit" value="Login" />
