@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import "./Reg_Form.css"; // Подключаем CSS файл
 import { BaseUrlUser } from "../../config";
-import { Link, Navigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 function Reg_Form() {
@@ -13,6 +13,8 @@ function Reg_Form() {
   } = useForm();
   const [error, setError] = useState(null);
 
+  const navigate = useNavigate();
+
   const onSubmit = async (data) => {
     try {
       const RegData = {
@@ -21,7 +23,6 @@ function Reg_Form() {
         password: data.password,
       };
 
-      console.log("SERVER_HOST:", process.env.REACT_APP_SERVER_HOST);
       const RegResponse = await axios.post(
         `http://${process.env.REACT_APP_SERVER_HOST}:${process.env.REACT_APP_SERVER_PORT}/user/create`,
         RegData
@@ -29,7 +30,7 @@ function Reg_Form() {
 
       if (RegResponse.status === 200) {
         console.log("Registration successful");
-        // Добавьте навигацию после успешной регистрации
+        navigate("/login")
       } else {
         console.error("Registration failed");
       }

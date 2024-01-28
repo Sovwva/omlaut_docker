@@ -10,7 +10,7 @@ function Home() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const res = await fetch('192.168.1.100:443/user');
+                const res = await fetch(`http://${process.env.REACT_APP_SERVER_HOST}:${process.env.REACT_APP_SERVER_PORT}/user`);
                 console.log(res.status)
                 const data = await res.json();
                 setResponse(data);
