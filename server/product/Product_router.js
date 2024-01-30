@@ -4,8 +4,8 @@ import TokenService from "../user/auth.js";
 
 const Product_router = new Router()
 
-Product_router.get('/getone', Product_controller.getone);
-Product_router.get('/get', Product_controller.get)
+// Product_router.get('/getone', Product_controller.getone);
+// Product_router.get('/get', Product_controller.get)
 Product_router.post('/create', TokenService.verifyToken, Product_controller.create);
 
 

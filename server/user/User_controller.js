@@ -60,7 +60,7 @@ class User_controller {
                     res.status(200).json({
                                         message: user.rows[0]
                                     })
-                    console.log(Date().toString(), `created user ${user.rows[0]}`)
+                    console.log(Date().toString(), `created user ${json(user.rows[0])}`)
                 } } catch (e) {
                 res.status(500).json({message: 'database error'})
                 console.error(e)
@@ -78,9 +78,11 @@ class User_controller {
                res.status(400).json({message: "User not found"})
             } else {
                 const hashedPasswordFromDB = user.rows[0].password;
-                const {userId, isadmin} = user.rows[0]
+                const {id, is_admin} = user.rows[0]
+                console.log(user.rows[0])
+                console.log(id, is_admin, hashedPasswordFromDB)
                 if (bcrypt.compareSync(password, hashedPasswordFromDB)) {
-                    const payload = {username, userId, isadmin}
+                    const payload = {username, id, is_admin}
                     const accessToken = await TokenService.genereteAccessToken(payload)
                     res.status(200).json({accessToken: accessToken });
                 } else {
@@ -94,11 +96,12 @@ class User_controller {
 
     async ChangePassword(req, res) {
         try {
-            const {newPassword} = req.body;
+            let {newPassword} = req.body;
             const {username} = req.user;
             if (!newPassword || !username) {
                 res.status(400).json({message: "not all data was provided"})
             } else {
+                newPassword = bcrypt.hashSync(newPassword, 8)
                 const user = await user_database.updatePassword(username, newPassword)
                 if (user.error) {
                     res.status(500).json({message: "something went wrong"})
@@ -119,7 +122,7 @@ class User_controller {
                 console.log(user.error)
                 res.status(400).json({message: "something went wrong"})
             } else {
-                res.status(200).json({message: `user ${user.rows[0]} deleted`})
+                res.status(200).json({message: `user ${json(user.rows[0])} deleted`})
             }
         } catch (e) {
             res.status(500).json({message: e})
