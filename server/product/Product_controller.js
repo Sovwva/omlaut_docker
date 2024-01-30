@@ -3,13 +3,13 @@ import json from "express";
 import pool from "../initdb.js";
 
 class Product_controller {
-        async getone(req, res) {
-                return
-        }
-
-        async get(req, res) {
-                return
-        }
+        // async getone(req, res) {
+        //         return
+        // }
+        //
+        // async get(req, res) {
+        //         return
+        // }
 
         async create(req, res) {
                 try {
