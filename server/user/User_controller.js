@@ -78,9 +78,9 @@ class User_controller {
                res.status(400).json({message: "User not found"})
             } else {
                 const hashedPasswordFromDB = user.rows[0].password;
-                const userId = user.rows[0].id
+                const {userId, isadmin} = user.rows[0]
                 if (bcrypt.compareSync(password, hashedPasswordFromDB)) {
-                    const payload = {username, userId}
+                    const payload = {username, userId, isadmin}
                     const accessToken = await TokenService.genereteAccessToken(payload)
                     res.status(200).json({accessToken: accessToken });
                 } else {

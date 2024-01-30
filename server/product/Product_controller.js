@@ -20,6 +20,7 @@ class Product_controller {
                         } else {
                                 const createdAt = new Date();
                                 const is_active = true
+                                res.status(200).json('product created most likely')
 
                         }
                 } catch (e) {
