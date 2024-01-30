@@ -6,7 +6,7 @@ const Product_router = new Router()
 
 Product_router.get('/getone', Product_controller.getone);
 Product_router.get('/get', Product_controller.get)
-Product_router.create('/create', TokenService.verifyToken, Product_controller.create);
+Product_router.post('/create', TokenService.verifyToken, Product_controller.create);
 
 
 export default Product_router
