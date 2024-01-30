@@ -1,8 +1,13 @@
 import Product_database from "./Product_database.js";
 import json from "express";
+import pool from "../initdb.js";
 
 class Product_controller {
         async getone(req, res) {
+                return
+        }
+
+        async get(req, res) {
                 return
         }
 
@@ -10,7 +15,7 @@ class Product_controller {
                 try {
                         const {price, description, category, quantity} = req.body
                         const {userId} = req.user
-                        if (!price || !description) {
+                        if (!price || !description || !category) {
                                 res.status(400).json({message: "Not all data was provided"})
                         } else {
                                 const createdAt = new Date();
@@ -35,5 +40,9 @@ class Product_controller {
         }
 
 }
+
+
+pool.query('SELECT DISTINCT category FROM products_schema.products', )
+
 
 export default Product_controller
