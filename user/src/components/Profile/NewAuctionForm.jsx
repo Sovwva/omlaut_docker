@@ -1,24 +1,31 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
-import { BaseUrlLot } from '../../config';
 
 function NewAuctionForm() {
     const { register, handleSubmit, setValue, reset } = useForm();
 
+    const getToken = () => {
+        return localStorage.getItem('accessToken');
+    };
+
     const handleNewAuctionSubmit = async (data) => {
         try {
             // Отправка запроса на создание нового аукционного лота
+            const token = getToken();
+            const config = {
+                headers: { Authorization: `${token}` }
+            };
             const auctionData = {
                 name: data.name,
                 description: data.description,
-                startingPrice: data.startingPrice,
-                lifeTime: data.lifeTime,
+                price: data.price,
+                category: data.category,
             };
 
             const createAuctionResponse = await axios.post(
                 `http://${process.env.REACT_APP_SERVER_HOST}:${process.env.REACT_APP_SERVER_PORT}/product/create`,
-                auctionData
+                auctionData, config
             );
 
             console.log('Auction created:', createAuctionResponse.data);
@@ -29,7 +36,7 @@ function NewAuctionForm() {
             formData.append('image', data.image[0]);
 
             const uploadImageResponse = await axios.post(
-                BaseUrlLot + `/api/image/upload/${auctionId}`,
+                `http://${process.env.REACT_APP_SERVER_HOST}:${process.env.REACT_APP_SERVER_PORT}/product/upload_photo/${auctionId}`,
                 formData
             );
 
@@ -59,12 +66,16 @@ function NewAuctionForm() {
                     <input type="text" {...register('description', { required: true })} />
                 </label>
                 <label>
-                    Starting Price:
-                    <input type="number" {...register('startingPrice', { required: true })} />
+                    Price:
+                    <input type="number" {...register('price', { required: true })} />
                 </label>
                 <label>
-                    Quantity:
-                    <input type="number" {...register('quantity', { required: true })} />
+                    Category:
+                    <select {...register('category', { required: true })}>
+                        <option value="home-appliances">Home appliances</option>
+                        <option value="sporting-goods">Sporting goods</option>
+                        <option value="cooking-supplies">Cooking supplies</option>
+                    </select>
                 </label>
                 <label>
                     Image:

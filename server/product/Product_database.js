@@ -26,7 +26,6 @@ class Product_database {
         }
     }
 
-
     async upload_photo(user_id, id, photo) {
         const sql = 'UPDATE products_schema.products SET photo = $2 WHERE id = $1 AND user_id = $3 returning *'
 
