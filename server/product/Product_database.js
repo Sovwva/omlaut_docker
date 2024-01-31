@@ -27,7 +27,26 @@ class Product_database {
     }
 
 
-    async upload_photo(id, photo) {
+    async upload_photo(user_id, id, photo) {
+        const sql = 'UPDATE products_schema.products SET photo = $2 WHERE id = $1 AND user_id = $3 returning *'
+
+        const values = [id, photo, user_id]
+
+        const client = await pool.connect();
+
+        try {
+
+            const ret = await client.query(sql, values)
+
+            return ret
+
+        } catch (e) {
+            await client.query('ROLLBACK')
+            console.error('DATABASE error:', e);
+            return {error: 'Database error'};
+        } finally {
+            client.release();
+        }
 
     }
 

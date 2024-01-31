@@ -1,5 +1,6 @@
 import Product_database from "./Product_database.js";
 import pool from "../initdb.js";
+import multer from "multer"
 
 class Product_controller {
 
@@ -51,7 +52,33 @@ class Product_controller {
         }
 
         async uploadImage(req, res) {
+                try {
+                        console.log("file", req.files[0].buffer)
+                        const user_id = req.user.id
+                        const id = req.body.id
 
+
+                        const file = req.files[0];
+                        const {buffer} = file
+
+                        if (!id) {
+                               res.status(400).json({message: "missing product id"})
+                        }  else if (file.error || !file) {
+                                res.status(400).json({message: 'file not found'})
+                                return null
+                        } else {
+                                const product = await Product_database.upload_photo(user_id, id, buffer)
+
+                                if (product.error) {
+                                        res.status(500).json({message: "something went wrong :("})
+                                } else {
+                                res.status(200).json({message: "photo was uploaded, most likely"})
+                                }
+                        }
+                } catch (e) {
+                        console.log(e)
+                        res.status(500).json({message: "something went wrong"})
+                }
         }
 
         async update(req, res) {
