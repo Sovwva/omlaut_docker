@@ -8,7 +8,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 function Header() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
   
   useEffect(() => {
     const accessToken = localStorage.getItem("accessToken");
