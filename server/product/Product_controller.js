@@ -4,13 +4,44 @@ import multer from "multer"
 
 class Product_controller {
 
-        async getone(req, res) {
-                return
+        async getimage(req, res) {
+                try {
+                        const id = req.query.id
+                        if (!id) {
+                                res.status(400).json({message: "product id (id) was not provided"})
+                        } else {
+                                const photo = await Product_database.get_photo(id)
+                                if (photo.error) {
+                                        res.status(500).json({message: photo.error})
+                                } else {
+                                        res.status(200).json({message: photo})
+                                }
+                        }
+
+                } catch (e) {
+                        res.status(500).json({message: "something went wrong"})
+                }
         }
 
-        async get(req, res) {
-                return
-        }
+        // async getone(req, res) {
+        //         return
+        // }
+        //
+        // async createCategory(req, res) {
+        //         try {
+        //
+        //         } catch (e) {
+        //                 res.status(500).json({message: e})
+        //         }
+        // }
+        //
+        // async update(req, res) {
+        //
+        // }
+        //
+        // async delete(req, res) {
+        //
+        // }
 
         async create(req, res) {
                 try {
@@ -43,13 +74,7 @@ class Product_controller {
                 }
         }
 
-        async createCategory(req, res) {
-                try {
 
-                } catch (e) {
-                        res.status(500).json({message: e})
-                }
-        }
 
         async uploadImage(req, res) {
                 try {
@@ -81,13 +106,53 @@ class Product_controller {
                 }
         }
 
-        async update(req, res) {
+        async searchProducts(req, res) {
+
+                let filters = [];
+
+                if (req.query.category) {
+                        const category = escape(req.query.category);
+                        filters.push(`category = '${category}'`);
+                }
+
+                if (req.query.price_from) {
+                        const price = parseFloat(req.query.price_from);
+                        filters.push(`price > ${price}`);
+                }
+
+                if (req.query.price_from) {
+                        const price = parseFloat(req.query.price_to);
+                        filters.push(`price < ${price}`);
+                }
+
+                if (req.query.name) {
+                        const name = escape(req.query.name);
+                        filters.push(`name LIKE '%${name}%'`);
+                }
+
+                if (req.query.user_id) {
+                        const id = req.query.user_id;
+                        filters.push(`id = ${id}`)
+                }
+
+                filters.push('is_active = true')
+
+                const where = filters.length ? "WHERE " + filters.join(" AND ") : "";
+
+                const sql = `SELECT name, id, category, created_at, price, quantity FROM products_schema.products ${where}`;
+
+                try {
+                        const { rows } = await pool.query(sql);
+                        console.log(rows)
+                        res.json(rows);
+                } catch (err) {
+                        console.error(err);
+                        res.sendStatus(500);
+                }
 
         }
 
-        async delete(req, res) {
 
-        }
 }
 
 
