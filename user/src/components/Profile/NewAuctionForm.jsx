@@ -13,15 +13,18 @@ function NewAuctionForm() {
         try {
             // Отправка запроса на создание нового аукционного лота
             const token = getToken();
+            console.log(token)
             const config = {
                 headers: { Authorization: `${token}` }
             };
             const auctionData = {
                 name: data.name,
                 description: data.description,
-                price: data.price,
+                price: parseFloat(data.price),
                 category: data.category,
             };
+
+            console.log(auctionData)
 
             const createAuctionResponse = await axios.post(
                 `http://${process.env.REACT_APP_SERVER_HOST}:${process.env.REACT_APP_SERVER_PORT}/product/create`,

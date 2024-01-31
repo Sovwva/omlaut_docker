@@ -50,8 +50,7 @@ class Product_controller {
                         const {id} = req.user
                         if (typeof (price) !== 'number') {
                                 res.status(400).json({message: "price is not valid"})
-                        }
-                        if (!name || !price || !category) {
+                        } else if (!name || !price || !category) {
                                 res.status(400).json({message: "Not all data was provided"})
                         } else {
                                 if (!quantity) {
