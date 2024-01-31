@@ -1,20 +1,25 @@
-//img imports
 import home from "../assets/img/home.png";
 import logo from "../assets/img/logo.png";
 import reg from "../assets/img/registration.png";
-// import profile from "../assets/img/profile.png";
-// import cart from "../assets/img/cart.png";
+import profile from "../assets/img/profile.png";
+import cart from "../assets/img/cart.png";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 function Header() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  
   useEffect(() => {
-    fetch(`http://${process.env.REACT_APP_SERVER_HOST}:${process.env.REACT_APP_SERVER_PORT}/user`)
-      .then((response) => response.text())
-      .then((data) => console.log(data))
-      .catch((error) => console.error("Произошла ошибка:", error));
+    const accessToken = localStorage.getItem("accessToken");
+    setIsLoggedIn(!!accessToken);
+    console.log(accessToken)
   }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("accessToken");
+    window.location.href = "/";
+  }
 
   return (
     <div className="header">
@@ -27,10 +32,30 @@ function Header() {
                 <img src={home} alt="Home" className="img" />
                 <span className="nav-label">Home</span>
             </Link>
-            <Link to={"/Login"} className={"nav-item"}>
-                <img src={reg} alt={"login"} className={"img"} />
-                <span className="nav-label">login</span>
-            </Link>
+            {isLoggedIn ? (
+                    <>
+
+                        <Link to={"/profile"} className={"nav-item"}>
+                            <img src={profile} alt={"profile"} className={"img"} />
+                            <span className="nav-label">profile</span>
+                        </Link>
+
+                        <Link to={"/cart"} className={"nav-item"}>
+                            <img src={cart} alt={"cart"} className={"img"} />
+                            <span className="nav-label">Cart</span>
+                        </Link>
+
+                        <button className={"nav-item"} onClick={handleLogout} >
+                            <img src={reg} alt={"logout"} className={"img"} />
+                            <span className="nav-label">logout</span>
+                        </button>
+                    </>
+                ) : (
+                    <Link to={"/Login"} className={"nav-item"}>
+                        <img src={reg} alt={"login"} className={"img"} />
+                        <span className="nav-label">login</span>
+                    </Link>
+                )}
         </div>
     </div>
   );

@@ -1,14 +1,11 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import "./Log_Form.css";
-import { BaseUrlUser } from "../../config";
 import axios from "axios";
 
 function Log_Form() {
   const [error, setError] = useState(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const navigate = useNavigate();
 
   const {
     register,
@@ -31,8 +28,7 @@ function Log_Form() {
       if (LogResponse.status === 200) {
         const accessToken = LogResponse.data.accessToken;
         localStorage.setItem("accessToken", accessToken);
-        setIsLoggedIn(true);
-        navigate("/");
+        window.location.href = "/";
       } else {
         setError(LogResponse.request);
       }
@@ -41,10 +37,6 @@ function Log_Form() {
       setError("An error occured during login")
     }
   };
-
-  if (isLoggedIn) {
-    return <Navigate to={"/"} />;
-  }
 
   return (
     <div className="input_form">

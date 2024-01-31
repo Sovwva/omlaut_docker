@@ -322,3 +322,8 @@ button {
 .product-type-button.active {
   background-color: #aaa;
 }
+
+.success-message {
+  color: green;
+  font-weight: bold;
+}

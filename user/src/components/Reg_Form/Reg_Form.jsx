@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import "./Reg_Form.css"; // Подключаем CSS файл
-import { BaseUrlUser } from "../../config";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -11,7 +10,7 @@ function Reg_Form() {
     formState: { errors },
     handleSubmit,
   } = useForm();
-  const [error, setError] = useState(null);
+  const error = useState(null);
 
   const navigate = useNavigate();
 

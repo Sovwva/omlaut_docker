@@ -94,11 +94,12 @@ class User_controller {
 
     async ChangePassword(req, res) {
         try {
-            const {newPassword} = req.body;
+            let {newPassword} = req.body;
             const {username} = req.user;
             if (!newPassword || !username) {
                 res.status(400).json({message: "not all data was provided"})
             } else {
+                newPassword = bcrypt.hashSync(newPassword, 8)
                 const user = await user_database.updatePassword(username, newPassword)
                 if (user.error) {
                     res.status(500).json({message: "something went wrong"})
