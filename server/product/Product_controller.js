@@ -177,7 +177,6 @@ class Product_controller {
 
                 try {
                         const { rows } = await pool.query(sql);
-                        console.log(rows)
                         res.json(rows);
                 } catch (err) {
                         console.error(err);

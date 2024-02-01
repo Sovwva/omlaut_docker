@@ -37,6 +37,22 @@ class User_controller {
         return null
     }
 
+    async get_via_token(req, res) {
+        try {
+            const username = req.user.username
+            const user = await User_database.getUser(username)
+            if (user.error) {
+                res.status(500).json({message: "user not found"})
+            } else {
+                res.status(200).json(user.rows[0])
+            }
+
+        } catch (e) {
+            res.status(500).json({message: "something went wrong"})
+        }
+
+    }
+
     async create(req, res) {
 
         console.log('catch create user')
