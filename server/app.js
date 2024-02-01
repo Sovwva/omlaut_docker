@@ -7,6 +7,7 @@ import User_router from "./user/User_router.js"
 import Product_controller from "./product/Product_controller.js";
 import Product_router from "./product/Product_router.js";
 import bodyParser from "express";
+import Cart_router from "./cart/cart_router.js";
 // import product_router from "./product/Product_router.js";
 // import "dotenv/config"; // loads variables from .env file
 
@@ -22,8 +23,6 @@ app.use(bodyParser.urlencoded({extended: true}))
 // app.use(bodyParser.json({
 //   limit: 20000000, // 2 МБ
 // }));
-app.use('/user', User_router);
-app.use('/product', Product_router);
 
 // app.use((req, res, next) => {
 //   const dateTime = new Date().toISOString();
@@ -34,11 +33,11 @@ app.use('/product', Product_router);
 //   });
 //   next();
 // });
-// app.use('/product', product_router);
 
-// app.use('/', (req, res) => {
-//   res.send('/')
-// })
+app.use('/user', User_router);
+app.use('/product', Product_router);
+app.use('/cart', Cart_router);
+// app.use('/pay', )
 
 const server = http.createServer(app);
 

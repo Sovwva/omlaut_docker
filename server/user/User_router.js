@@ -1,6 +1,6 @@
 import {Router} from "express";
 import User_controller from './User_controller.js'
-import TokenService from "./auth.js";
+import TokenService from "../auth/auth.js";
 
 const User_router = new Router()
 

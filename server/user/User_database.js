@@ -1,5 +1,6 @@
 import pool from "../initdb.js";
 import {json, response} from "express";
+import Product_database from "../product/Product_database.js";
 
 
 class User_database {
@@ -91,14 +92,12 @@ class User_database {
 
         try {
             await client.query('BEGIN');
-
             const user = await this.getUser(username);
-
             if (user.rows.length === 0) {
                 await client.query('ROLLBACK');
                 return { error: 'User not found' };
             }
-
+            await Product_database.delete_all(user.rows[0].id)
             await client.query(sql, values);
             await client.query('COMMIT');
             return user

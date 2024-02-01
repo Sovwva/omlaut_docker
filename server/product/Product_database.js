@@ -26,6 +26,30 @@ class Product_database {
         }
     }
 
+    async get(id) {
+        const sql = ('SELECT * FROM products_schema.products WHERE id = $1')
+
+        const values = [id]
+
+        const product = await pool.query(sql, values)
+        if (!product) {
+            return {error: "product does not exist"}
+        }
+        return product
+    }
+
+    async edit(id, price, description, quantity, user_id, name, category) {
+        const sql = ('UPDATE products_schema.products SET price = $2, description = $3, quantity = $4, name = $6, category = $7 WHERE user_id = $5 AND id = $1 RETURNING name, id, category, created_at, price, quantity')
+
+        const values = [id, price, description, quantity, user_id, name, category]
+        try {
+        const product = await pool.query(sql, values)
+            return product
+        } catch (e) {
+        return {error: e}
+        }
+    }
+
     async upload_photo(user_id, id, photo) {
         const sql = 'UPDATE products_schema.products SET photo = $2 WHERE id = $1 AND user_id = $3 returning *'
 
@@ -62,6 +86,46 @@ class Product_database {
             return photo
         } catch (e) {
             return {error: e}
+        }
+
+    }
+
+    async delete(id, user_id) {
+        const sql = 'DELETE FROM products_schema.products WHERE (id = $1 AND user_id = $2) RETURNING name, user_id, id, category, price'
+
+        const values = [id, user_id]
+
+        const client = await pool.connect()
+
+        try {
+            await client.query('BEGIN')
+            const ans = await client.query(sql, values)
+            await client.query('COMMIT')
+        } catch (e) {
+            await client.query('ROLLBACK')
+            console.error('DATABASE error:', e);
+            return {error: "Something went wrong"}
+        } finally {
+            await client.release()
+        }
+    }
+
+    async delete_all(user_id) {
+        const sql = 'DELETE FROM products_schema.products WHERE (user_id = $1)'
+
+        const values = [user_id]
+
+        const client = await pool.connect()
+        try {
+            await client.query('BEGIN')
+            const ans = await client.query(sql, values)
+            await client.query('COMMIT')
+        } catch (e) {
+            await client.query('ROLLBACK')
+            console.error('Database error:', e)
+            return {error: "Something went wrong"}
+        } finally {
+            await client.release()
         }
 
     }

@@ -1,6 +1,7 @@
 import Product_database from "./Product_database.js";
 import pool from "../initdb.js";
 import multer from "multer"
+import product_database from "./Product_database.js";
 
 class Product_controller {
 
@@ -23,35 +24,35 @@ class Product_controller {
                 }
         }
 
-        // async getone(req, res) {
-        //         return
-        // }
-        //
-        // async createCategory(req, res) {
-        //         try {
-        //
-        //         } catch (e) {
-        //                 res.status(500).json({message: e})
-        //         }
-        // }
-        //
-        // async update(req, res) {
-        //
-        // }
-        //
-        // async delete(req, res) {
-        //
-        // }
+        async getone(req, res) {
+                try {
+                        const id = req.query.id
+                        if (!id) {
+                                res.status(400).json({message: "Product id was not provided"})
+                        } else {
+                                const product = await Product_database.get()
+                                if (product.error) {
+                                        res.status(500).json({message: "Product does not exist"})
+                                } else {
+                                        res.status(200).json({message: product.rows[0]})
+                                }
+                        }
+
+                } catch (e) {
+                        res.status(500).json({message: "Something went wrong"})
+                }
+        }
+
 
         async create(req, res) {
                 try {
                         const {name, price, description, category} = req.body
+                        console.log({name, price, description, category})
                         let { quantity } = req.body
                         const {id} = req.user
                         if (typeof (price) !== 'number') {
                                 res.status(400).json({message: "price is not valid"})
-                        }
-                        if (!name || !price || !category) {
+                        } else if (!name || !category) {
                                 res.status(400).json({message: "Not all data was provided"})
                         } else {
                                 if (!quantity) {
@@ -64,10 +65,9 @@ class Product_controller {
 
                                 if (product.error) {
                                         res.status(500).json({message: "something went wrong"})
+                                } else {
+                                        res.status(200).json(`product ${product} created most likely`)
                                 }
-
-                                res.status(200).json(`product ${product} created most likely`)
-
                         }
                 } catch (e) {
                         res.status(500).json({message: "something went wrong"})
@@ -106,6 +106,28 @@ class Product_controller {
                 }
         }
 
+        async edit(req, res) {
+                try {
+                        const user_id = req.user.id
+                        const {description, name, category} = req.body
+                        let {id, price, quantity} = req.body
+                        id = parseInt(id); price = parseFloat(price); quantity = parseInt(quantity);
+                        if (isNaN(id) || isNaN(price) || isNaN(quantity)) {
+                                res.status(400).json({message: "not valid data"})
+                                return
+                        } else {
+                                const product = await product_database.edit(id, price, description, quantity, user_id, name, category)
+                                if (product.error) {
+                                        res.status(500).json({message: product.error})
+                                } else {
+                                        res.status(200).json(product.rows[0])
+                                }
+                        }
+                } catch (e) {
+                        res.status(500).json({message: "Something went wrong"})
+                }
+        }
+
         async searchProducts(req, res) {
 
                 let filters = [];
@@ -116,13 +138,21 @@ class Product_controller {
                 }
 
                 if (req.query.price_from) {
-                        const price = parseFloat(req.query.price_from);
-                        filters.push(`price > ${price}`);
+                                const price = parseFloat(req.query.price_from);
+                                filters.push(`price >= ${price}`);
+                                if (isNaN(price)) {
+                                        res.status(400).json({message: "price_from is not valid"})
+                                        return
+                                }
                 }
 
-                if (req.query.price_from) {
+                if (req.query.price_to) {
                         const price = parseFloat(req.query.price_to);
-                        filters.push(`price < ${price}`);
+                        filters.push(`price <= ${price}`);
+                        if (isNaN(price)) {
+                                res.status(400).json({message: "price_tu is not valid"})
+                                return
+                        }
                 }
 
                 if (req.query.name) {
@@ -131,15 +161,19 @@ class Product_controller {
                 }
 
                 if (req.query.user_id) {
-                        const id = req.query.user_id;
-                        filters.push(`id = ${id}`)
+                        const id = parseInt(req.query.user_id);
+                        if (isNaN(id)) {
+                                res.status(400).json({message: "id is not valid"})
+                                return
+                        }
+                        filters.push(`user_id = ${id}`)
                 }
 
                 filters.push('is_active = true')
 
                 const where = filters.length ? "WHERE " + filters.join(" AND ") : "";
 
-                const sql = `SELECT name, id, category, created_at, price, quantity FROM products_schema.products ${where}`;
+                const sql = `SELECT name, id, category, description, created_at, price, quantity FROM products_schema.products ${where}`;
 
                 try {
                         const { rows } = await pool.query(sql);
@@ -150,6 +184,26 @@ class Product_controller {
                         res.sendStatus(500);
                 }
 
+        }
+
+        async delete(req, res) {
+                try {
+                const user_id = req.user.id
+
+                const id = parseInt(req.body.id)
+                if (!id || isNaN(id)) {
+                        res.status(400).json({message: "product id was not provided"})
+                } else {
+                                const answer = await Product_database.delete(id, user_id)
+                                if (answer.error) {
+                                        res.status(500).json({message: "something went wrong"})
+                                } else {
+                                        res.status(200).json({message: "product was deleted succesfully"})
+                                }
+                }
+                } catch (e) {
+                        res.status(500).json({message: "something went wrong"})
+                }
         }
 
 

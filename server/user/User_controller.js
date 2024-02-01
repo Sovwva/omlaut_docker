@@ -1,8 +1,9 @@
 import User_database from "./User_database.js"
 import bcrypt from "bcrypt"
-import TokenService from "./auth.js";
+import TokenService from "../auth/auth.js";
 import json from "express";
 import user_database from "./User_database.js";
+import Product_database from "../product/Product_database.js";
 
 
 class User_controller {
@@ -128,14 +129,6 @@ class User_controller {
             res.status(500).json({message: e})
         }
     }
-
-    // async logOut(req, res) {
-    //
-    // }
-    //
-    // async refresh() {
-    //
-    // }
 
 }
 
