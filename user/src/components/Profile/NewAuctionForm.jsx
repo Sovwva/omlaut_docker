@@ -75,9 +75,9 @@ function NewAuctionForm() {
                 <label>
                     Category:
                     <select {...register('category', { required: true })}>
-                        <option value="home-appliances">Home appliances</option>
-                        <option value="sporting-goods">Sporting goods</option>
-                        <option value="cooking-supplies">Cooking supplies</option>
+                        <option value="home appliances">Home appliances</option>
+                        <option value="sporting goods">Sporting goods</option>
+                        <option value="cooking supplies">Cooking supplies</option>
                     </select>
                 </label>
                 <label>

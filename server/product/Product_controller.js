@@ -116,12 +116,12 @@ class Product_controller {
 
                 if (req.query.price_from) {
                         const price = parseFloat(req.query.price_from);
-                        filters.push(`price > ${price}`);
+                        filters.push(`price >= ${price}`);
                 }
 
-                if (req.query.price_from) {
+                if (req.query.price_to) {
                         const price = parseFloat(req.query.price_to);
-                        filters.push(`price < ${price}`);
+                        filters.push(`price <= ${price}`);
                 }
 
                 if (req.query.name) {
@@ -131,7 +131,7 @@ class Product_controller {
 
                 if (req.query.user_id) {
                         const id = req.query.user_id;
-                        filters.push(`id = ${id}`)
+                        filters.push(`user_id = ${id}`)
                 }
 
                 filters.push('is_active = true')
