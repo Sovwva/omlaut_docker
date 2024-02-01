@@ -1,4 +1,5 @@
 import pool from '../initdb.js'
+import Cart_database from "../cart/cart_database.js";
 
 class Product_database {
 
@@ -90,17 +91,19 @@ class Product_database {
 
     }
 
-    async delete(id, user_id) {
+    async delete(product_id, user_id) {
         const sql = 'DELETE FROM products_schema.products WHERE (id = $1 AND user_id = $2) RETURNING name, user_id, id, category, price'
 
-        const values = [id, user_id]
+        const values = [product_id, user_id]
 
         const client = await pool.connect()
 
         try {
             await client.query('BEGIN')
+            await Cart_database.delete_product_from_cart(product_id)
             const ans = await client.query(sql, values)
             await client.query('COMMIT')
+            return ans
         } catch (e) {
             await client.query('ROLLBACK')
             console.error('DATABASE error:', e);
@@ -118,6 +121,7 @@ class Product_database {
         const client = await pool.connect()
         try {
             await client.query('BEGIN')
+            await Cart_database.delete_all_products_cart(user_id)
             const ans = await client.query(sql, values)
             await client.query('COMMIT')
         } catch (e) {

@@ -1,6 +1,7 @@
 import pool from "../initdb.js";
 import {json, response} from "express";
 import Product_database from "../product/Product_database.js";
+import Cart_database from "../cart/cart_database.js";
 
 
 class User_database {
@@ -97,6 +98,7 @@ class User_database {
                 await client.query('ROLLBACK');
                 return { error: 'User not found' };
             }
+            await Cart_database.delete_all_from_cart(user.rows[0].id)
             await Product_database.delete_all(user.rows[0].id)
             await client.query(sql, values);
             await client.query('COMMIT');

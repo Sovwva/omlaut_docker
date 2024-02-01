@@ -66,7 +66,7 @@ class Product_controller {
                                 if (product.error) {
                                         res.status(500).json({message: "something went wrong"})
                                 } else {
-                                        res.status(200).json(`product ${product} created most likely`)
+                                        res.status(200).json(product.rows[0])
                                 }
                         }
                 } catch (e) {
@@ -161,12 +161,21 @@ class Product_controller {
                 }
 
                 if (req.query.user_id) {
-                        const id = parseInt(req.query.user_id);
+                        const user_id = parseInt(req.query.user_id);
+                        if (isNaN(user_id)) {
+                                res.status(400).json({message: "user_id is not valid"})
+                                return
+                        }
+                        filters.push(`user_id = ${user_id}`)
+                }
+
+                if (req.query.id) {
+                        const id = parseInt(req.query.id);
                         if (isNaN(id)) {
                                 res.status(400).json({message: "id is not valid"})
                                 return
                         }
-                        filters.push(`user_id = ${id}`)
+                        filters.push(`id = ${id}`)
                 }
 
                 filters.push('is_active = true')

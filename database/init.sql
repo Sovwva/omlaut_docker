@@ -23,29 +23,6 @@ DO $$
             RAISE NOTICE 'Таблица users_schema.users уже существует';
         END IF;
 
-        -- Создание таблицы корзины пользователя
-        IF NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'users_schema' AND table_name = 'carts') THEN
-            CREATE TABLE users_schema.carts (
-                                                id SERIAL PRIMARY KEY,
-                                                user_id INTEGER NOT NULL REFERENCES users_schema.users (id)
-            );
-            RAISE NOTICE 'Создана таблица users_schema.carts';
-        ELSE
-            RAISE NOTICE 'Таблица users_schema.carts уже существует';
-        END IF;
-
-        -- Создание таблицы аутентификации
-        IF NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'users_schema' AND table_name = 'authentication') THEN
-            CREATE TABLE users_schema.authentication (
-                                                         id SERIAL PRIMARY KEY,
-                                                         user_id INTEGER NOT NULL REFERENCES users_schema.users (id),
-                                                         token VARCHAR(255) NOT NULL
-            );
-            RAISE NOTICE 'Создана таблица users_schema.authentication';
-        ELSE
-            RAISE NOTICE 'Таблица users_schema.authentication уже существует';
-        END IF;
-
         -- Создание схемы для продуктов
         IF NOT EXISTS (SELECT 1 FROM information_schema.schemata WHERE schema_name = 'products_schema') THEN
             CREATE SCHEMA products_schema;
@@ -71,6 +48,18 @@ DO $$
             RAISE NOTICE 'Создана таблица products_schema.products';
         ELSE
             RAISE NOTICE 'Таблица products_schema.products уже существует';
+        END IF;
+
+        IF NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'users_schema' AND table_name = 'carts') THEN
+            CREATE TABLE users_schema.carts (
+                                                id SERIAL PRIMARY KEY,
+                                                product_id INTEGER NOT NULL REFERENCES products_schema.products(id),
+                                                user_id INTEGER NOT NULL REFERENCES users_schema.users(id)
+
+            );
+            RAISE NOTICE 'Создана таблица users_schema.carts';
+        ELSE
+            RAISE NOTICE 'Таблица users_schema.carts уже существует';
         END IF;
 
     END $$;
