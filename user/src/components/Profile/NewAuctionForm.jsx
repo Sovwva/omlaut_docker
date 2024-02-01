@@ -34,13 +34,13 @@ function NewAuctionForm() {
             console.log('Auction created:', createAuctionResponse.data);
 
             // Отправка фотографии
-            const auctionId = createAuctionResponse.data;
             const formData = new FormData();
+            formData.append('productId', createAuctionResponse.data.id);
             formData.append('image', data.image[0]);
 
             const uploadImageResponse = await axios.post(
-                `http://${process.env.REACT_APP_SERVER_HOST}:${process.env.REACT_APP_SERVER_PORT}/product/upload_photo/${auctionId}`,
-                formData
+                `http://${process.env.REACT_APP_SERVER_HOST}:${process.env.REACT_APP_SERVER_PORT}/product/upload_photo`,
+                formData, config
             );
 
             console.log('Image uploaded:', uploadImageResponse.data);

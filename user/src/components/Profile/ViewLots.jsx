@@ -1,40 +1,57 @@
 import React, { useState, useEffect } from 'react';
-import ProductTypeButtons from '../products/ProductTypeButtons';
-import Products from '../products/Products';
 
 function ViewLots({ currentPage }) {
-    // eslint-disable-next-line
-    const [showProductTypes, setShowProductTypes] = useState(false);
-    const [selectedProductType, setSelectedProductType] = useState(null);
+    const [userProducts, setUserProducts] = useState([]);
 
     useEffect(() => {
         if (currentPage === 'viewLots') {
-            setShowProductTypes(true);
-        } else {
-            setShowProductTypes(false);
-            setSelectedProductType(null);
+            fetchUserProducts();
         }
     }, [currentPage]);
 
-    const handleProductTypeSelect = (type) => {
-        setSelectedProductType(type);
+    const fetchUserProducts = async () => {
+        try {
+            const token = getToken();
+            const res = await fetch(`http://${process.env.REACT_APP_SERVER_HOST}:${process.env.REACT_APP_SERVER_PORT}/user/get`, {
+                headers: { Authorization: `${token}` }
+            });
+            if (!res.ok) {
+                throw new Error('Failed to fetch user data');
+            }
+            const userData = await res.json();
+            const userId = userData.id;
+            const queryParams = new URLSearchParams({
+                user_id: userId,
+            });
+            const productsRes = await fetch(`http://${process.env.REACT_APP_SERVER_HOST}:${process.env.REACT_APP_SERVER_PORT}/product/?${queryParams}`);
+            if (!productsRes.ok) {
+                throw new Error('Failed to fetch user products');
+            }
+            const productsData = await productsRes.json();
+            setUserProducts(productsData);
+        } catch (error) {
+            console.error('Error fetching user products:', error);
+        }
     };
 
-    const productTypes = ['User Lots', 'Participated Lots', 'Paid Lots'];
-    const showButtons = currentPage === 'viewLots';
+    const getToken = () => {
+        return localStorage.getItem('accessToken');
+    };
 
     return (
         <div className="view-lots-container">
             <h2>View Lots</h2>
 
-            <ProductTypeButtons
-                showButtons={showButtons}
-                productTypes={productTypes}
-                selectedProductType={selectedProductType}
-                onSelectProductType={handleProductTypeSelect}
-            />
-
-            {selectedProductType && <Products productType={selectedProductType} />}
+            <div className="products-container">
+                {Array.isArray(userProducts) && userProducts.map(product => (
+                    <div key={product.id} className="product">
+                        <h3>{product.name}</h3>
+                        <p>Category: {product.category}</p>
+                        <p>Price: {product.price}</p>
+                        {/* Добавьте другие детали, если необходимо */}
+                    </div>
+                ))}
+            </div>
         </div>
     );
 }
