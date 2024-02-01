@@ -13,15 +13,18 @@ function NewAuctionForm() {
         try {
             // Отправка запроса на создание нового аукционного лота
             const token = getToken();
+            console.log(token)
             const config = {
                 headers: { Authorization: `${token}` }
             };
             const auctionData = {
                 name: data.name,
                 description: data.description,
-                price: data.price,
+                price: parseFloat(data.price),
                 category: data.category,
             };
+
+            console.log(auctionData)
 
             const createAuctionResponse = await axios.post(
                 `http://${process.env.REACT_APP_SERVER_HOST}:${process.env.REACT_APP_SERVER_PORT}/product/create`,
@@ -72,9 +75,9 @@ function NewAuctionForm() {
                 <label>
                     Category:
                     <select {...register('category', { required: true })}>
-                        <option value="home-appliances">Home appliances</option>
-                        <option value="sporting-goods">Sporting goods</option>
-                        <option value="cooking-supplies">Cooking supplies</option>
+                        <option value="home appliances">Home appliances</option>
+                        <option value="sporting goods">Sporting goods</option>
+                        <option value="cooking supplies">Cooking supplies</option>
                     </select>
                 </label>
                 <label>
