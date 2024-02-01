@@ -138,7 +138,7 @@ class Product_controller {
 
                 const where = filters.length ? "WHERE " + filters.join(" AND ") : "";
 
-                const sql = `SELECT name, id, category, created_at, price, quantity FROM products_schema.products ${where}`;
+                const sql = `SELECT name, id, category, description, created_at, price, quantity FROM products_schema.products ${where}`;
 
                 try {
                         const { rows } = await pool.query(sql);

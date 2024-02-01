@@ -6,7 +6,6 @@ const Search = ({ onSearchResult }) => {
     const [category, setCategory] = useState('');
     const [priceFrom, setPriceFrom] = useState('');
     const [priceTo, setPriceTo] = useState('');
-    const [userId, setUserId] = useState('');
 
     const handleNameChange = (event) => {
         setName(event.target.value);
@@ -22,10 +21,6 @@ const Search = ({ onSearchResult }) => {
 
     const handlePriceToChange = (event) => {
         setPriceTo(event.target.value);
-    };
-
-    const handleUserIdChange = (event) => {
-        setUserId(event.target.value);
     };
 
     const handleSearch = async () => {
@@ -46,7 +41,6 @@ const Search = ({ onSearchResult }) => {
             const data = await response.json();
             console.log(data);
             if(typeof onSearchResult === 'function'){
-                console.log("Calling onSearchResult with data:", data);
                 onSearchResult(data);
             }
         } catch (error) {

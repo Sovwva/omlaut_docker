@@ -8,9 +8,7 @@ function Home() {
     const [products, setProducts] = useState([]);
 
     const handleSearchResult = (searchResults) => {
-        console.log("New search results:", searchResults);
         setProducts(searchResults);
-        console.log("Products after update:", products);
     };
 
     useEffect(() => {
@@ -22,7 +20,6 @@ function Home() {
                 }
                 const data = await res.json();
                 setProducts(data);
-                console.log("Rendering Home component");
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
@@ -38,6 +35,7 @@ function Home() {
                 {Array.isArray(products) && products.map(product => (
                     <div key={product.id} className="product">
                         <h2>{product.name}</h2>
+                        <p>{product.description}</p>
                         <p>Category: {product.category}</p>
                         <p>Price: {product.price}</p>
                         {/* Add more details as needed */}
