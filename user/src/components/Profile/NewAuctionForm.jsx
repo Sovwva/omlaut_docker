@@ -34,10 +34,11 @@ function NewAuctionForm() {
             console.log('Auction created:', createAuctionResponse.data);
 
             // Отправка фотографии
-            const formData = new FormData();
-            formData.append('productId', createAuctionResponse.data.id);
-            formData.append('image', data.image[0]);
+            let formData = new FormData();
+            formData.append('id', createAuctionResponse.data.id);
+            formData.append('image', data.image);
 
+            console.log('FormData:', formData)
             const uploadImageResponse = await axios.post(
                 `http://${process.env.REACT_APP_SERVER_HOST}:${process.env.REACT_APP_SERVER_PORT}/product/upload_photo`,
                 formData, config
@@ -53,6 +54,7 @@ function NewAuctionForm() {
 
     const handleImageChange = (event) => {
         const file = event.target.files[0];
+        console.log("Selected file:", file);
         setValue('image', file); // Устанавливаем значение поля 'image' в объект данных формы
     };
 

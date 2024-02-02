@@ -1,104 +1,97 @@
 import React, { useState, useEffect } from 'react';
-import { BaseUrlLot, BaseUrlPayment } from '../config';
-import Products from '../components/products/Products';
-import { Navigate } from 'react-router-dom';
 
 const Cart = () => {
-    const [productType, setProductType] = useState('won');
-    const [hasWonProducts, setHasWonProducts] = useState(false);
-    const [paymentLink, setPaymentLink] = useState('');
-    const [paymentInitiated, setPaymentInitiated] = useState(false);
+    const [cartItems, setCartItems] = useState([]);
     const [totalAmount, setTotalAmount] = useState(0);
 
-    useEffect(() => {
-        const checkWonProducts = async () => {
-            try {
-                const token = localStorage.getItem('accessToken');
-                const url = `${BaseUrlLot}/api/auction/auth-winner-auctions`;
-
-                if (!token) {
-                    throw new Error('Not authorized');
-                }
-
-                const response = await fetch(url, {
-                    headers: {
-                        Authorization: `${token}`,
-                    },
-                });
-
-                if (response.status === 200) {
-                    const data = await response.json();
-                    setHasWonProducts(data.length > 0);
-
-                    // Calculate total amount
-                    let amount = 0;
-                    data.forEach((auction) => {
-                        amount += auction.current_price;
-                    });
-                    setTotalAmount(amount);
-                } else {
-                    setHasWonProducts(false);
-                }
-            } catch (error) {
-                console.error(error);
-                setHasWonProducts(false);
-            }
-        };
-
-        checkWonProducts();
-    }, []);
-    // eslint-disable-next-line
-    const handleProductTypeChange = (type) => {
-        setProductType(type);
+    const getToken = () => {
+        return localStorage.getItem('accessToken');
     };
 
-    const handlePayment = async () => {
+    useEffect(() => {
+        fetchCartItems();
+    }, []);
+
+    const fetchCartItems = async () => {
         try {
             const token = localStorage.getItem('accessToken');
-            const url = `${BaseUrlPayment}/api/payment/create-payment-link`;
-
-            if (!token) {
-                throw new Error('Not authorized');
-            }
-
-            const response = await fetch(url, {
-                headers: {
-                    Authorization: `${token}`,
-                },
+            const response = await fetch(`http://${process.env.REACT_APP_SERVER_HOST}:${process.env.REACT_APP_SERVER_PORT}/cart/`, {
+                headers: { Authorization: token },
             });
 
-            if (response.status === 200) {
-                const data = await response.text();
-                setPaymentLink(data);
-                setPaymentInitiated(true);
+            if (response.ok) {
+                const data = await response.json();
+                setCartItems(data.products);
+                calculateTotalAmount(data.products);
             } else {
-                throw new Error('Failed to create payment link');
+                throw new Error('Failed to fetch cart items');
             }
         } catch (error) {
             console.error(error);
-            setPaymentLink('');
-            setPaymentInitiated(false);
         }
     };
 
-    if (paymentInitiated) {
-        return <Navigate to="/payment" />;
-    }
+    const calculateTotalAmount = (items) => {
+        const total = items.reduce((acc, item) => acc + item.price, 0);
+        setTotalAmount(total);
+    };
+
+    const addToCart = async (product) => {
+        try {
+            const token = getToken();
+            console.log(product.id)
+            // Ваш запрос на сервер для добавления продукта в корзину
+            const response = await fetch(`http://${process.env.REACT_APP_SERVER_HOST}:${process.env.REACT_APP_SERVER_PORT}/cart/`, {
+                method: 'POST',
+                headers: { Authorization: `${token}` },
+                body: {id: product.id},
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setCartItems([...cartItems, data.product]);
+                setTotalAmount(totalAmount + data.product.price);
+            } else {
+                throw new Error('Failed to add product to cart');
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const removeFromCart = async (product) => {
+        try {
+            // Ваш запрос на сервер для удаления продукта из корзины
+            const response = await fetch(`http://${process.env.REACT_APP_SERVER_HOST}:${process.env.REACT_APP_SERVER_PORT}/cart/`, {
+                method: 'DELETE',
+            });
+
+            if (response.ok) {
+                setCartItems(cartItems.filter(item => item.id !== product.id));
+                setTotalAmount(totalAmount - product.price);
+            } else {
+                throw new Error('Failed to remove product from cart');
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    };
 
     return (
         <div className="cart-container">
             <h2>Cart</h2>
-            <Products productType={productType} />
-            {hasWonProducts && (
-                <div className="payment-button-container">
+            {cartItems.length > 0 ? (
+                <>
+                    {cartItems.map(item => (
+                        <div key={item.id}>
+                            <p>{item.name}</p>
+                            <button onClick={() => removeFromCart(item.id)}>Remove</button>
+                        </div>
+                    ))}
                     <div>Total Amount: {totalAmount}</div>
-                    <button onClick={handlePayment}>Pay Now</button>
-                    {paymentLink && (
-                        <a href={paymentLink} target="_blank" rel="noopener noreferrer">
-                            Complete Payment
-                        </a>
-                    )}
-                </div>
+                </>
+            ) : (
+                <p>Your cart is empty</p>
             )}
         </div>
     );

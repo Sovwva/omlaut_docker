@@ -13,7 +13,6 @@ function Header() {
   useEffect(() => {
     const accessToken = localStorage.getItem("accessToken");
     setIsLoggedIn(!!accessToken);
-    console.log(accessToken)
   }, []);
 
   const handleLogout = () => {
