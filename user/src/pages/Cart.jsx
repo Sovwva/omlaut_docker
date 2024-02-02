@@ -20,8 +20,25 @@ const Cart = () => {
 
             if (response.ok) {
                 const data = await response.json();
-                setCartItems(data.products);
-                calculateTotalAmount(data.products);
+                console.log(data)
+                // Проверяем, что data - это массив объектов product
+                if (Array.isArray(data)) {
+                    // Для каждого продукта отправляем запрос на получение информации о продукте
+                    const productPromises = data.map(async (product) => {
+                        const productResponse = await fetch(`http://${process.env.REACT_APP_SERVER_HOST}:${process.env.REACT_APP_SERVER_PORT}/product/get/?id=${product.product_id}`, {
+                        });
+                        return productResponse.json();
+                    });
+                    // Ожидаем завершения всех запросов
+                    const products = await Promise.all(productPromises);
+                    console.log(products);
+                    // Устанавливаем полученные продукты в состояние cartItems
+                    setCartItems(products);
+                    // Вычисляем общую стоимость
+                    calculateTotalAmount(products);
+                } else {
+                    throw new Error('Invalid data format');
+                }
             } else {
                 throw new Error('Failed to fetch cart items');
             }
@@ -65,9 +82,9 @@ const Cart = () => {
             {cartItems.length > 0 ? (
                 <>
                     {cartItems.map(item => (
-                        <div key={item.id}>
+                        <div key={item.product_id}>
                             <p>{item.name}</p>
-                            <button onClick={() => removeFromCart(item.id)}>Remove</button>
+                            <button onClick={() => removeFromCart(item)}>Remove</button>
                         </div>
                     ))}
                     <div>Total Amount: {totalAmount}</div>
