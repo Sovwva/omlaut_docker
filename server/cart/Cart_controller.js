@@ -11,6 +11,7 @@ class Cart_controller {
                 res.status(400).json({message: "product id (id) was not provided or not valid"})
             } else {
                 const product = await Cart_database.get_this_product_in_cart(user, id)
+                //
                 if (product.rows.length !== 0) {
                     res.status(400).json({message: 'You try to add product to cart twice'})
                     return
