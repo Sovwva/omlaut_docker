@@ -4,10 +4,6 @@ const Cart = () => {
     const [cartItems, setCartItems] = useState([]);
     const [totalAmount, setTotalAmount] = useState(0);
 
-    const getToken = () => {
-        return localStorage.getItem('accessToken');
-    };
-
     useEffect(() => {
         fetchCartItems();
     }, []);
@@ -16,7 +12,10 @@ const Cart = () => {
         try {
             const token = localStorage.getItem('accessToken');
             const response = await fetch(`http://${process.env.REACT_APP_SERVER_HOST}:${process.env.REACT_APP_SERVER_PORT}/cart/`, {
-                headers: { Authorization: token },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': token,
+                 },
             });
 
             if (response.ok) {
@@ -36,34 +35,17 @@ const Cart = () => {
         setTotalAmount(total);
     };
 
-    const addToCart = async (product) => {
-        try {
-            const token = getToken();
-            console.log(product.id)
-            // Ваш запрос на сервер для добавления продукта в корзину
-            const response = await fetch(`http://${process.env.REACT_APP_SERVER_HOST}:${process.env.REACT_APP_SERVER_PORT}/cart/`, {
-                method: 'POST',
-                headers: { Authorization: `${token}` },
-                body: {id: product.id},
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                setCartItems([...cartItems, data.product]);
-                setTotalAmount(totalAmount + data.product.price);
-            } else {
-                throw new Error('Failed to add product to cart');
-            }
-        } catch (error) {
-            console.error(error);
-        }
-    };
-
     const removeFromCart = async (product) => {
         try {
+            const token = localStorage.getItem('accessToken')
             // Ваш запрос на сервер для удаления продукта из корзины
             const response = await fetch(`http://${process.env.REACT_APP_SERVER_HOST}:${process.env.REACT_APP_SERVER_PORT}/cart/`, {
                 method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': token,
+                },
+                body: JSON.stringify({ id: product.id })
             });
 
             if (response.ok) {

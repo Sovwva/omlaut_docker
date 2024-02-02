@@ -48,10 +48,25 @@ function Home() {
         return URL.createObjectURL(blob);
     };
 
-    const handleAddToCart = async (product) => {
+    const addToCart = async (products) => {
         try {
-            await Cart.addToCart(product);
-            alert('Product added to cart successfully!');
+            const token = localStorage.getItem('accessToken');
+            console.log(products.id)
+            // Ваш запрос на сервер для добавления продукта в корзину
+            const response = await fetch(`http://${process.env.REACT_APP_SERVER_HOST}:${process.env.REACT_APP_SERVER_PORT}/cart/`, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': token,
+                },
+                body: JSON.stringify({ id: products.id }),
+            });
+
+            if (response.ok) {
+                alert('Product added to cart successfully!');
+            } else {
+                throw new Error('Failed to add product to cart');
+            }
         } catch (error) {
             console.error('Error adding product to cart:', error);
             alert('Failed to add product to cart');
@@ -69,7 +84,7 @@ function Home() {
                         <p>{product.description}</p>
                         <p>Category: {product.category}</p>
                         <p>Price: {product.price}</p>
-                        <button onClick={() => handleAddToCart(product)}>Add to Cart</button>
+                        <button onClick={() => addToCart(product)}>Add to Cart</button>
                         {/* Add more details as needed */}
                     </div>
                 ))}
