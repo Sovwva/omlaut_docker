@@ -15,7 +15,8 @@ class Product_controller {
                                 if (photo.error) {
                                         res.status(500).json({message: photo.error})
                                 } else {
-                                        res.status(200).json({message: photo})
+                                        const res_photo = photo.rows[0].photo
+                                        res.status(200).json({res_photo})
                                 }
                         }
 

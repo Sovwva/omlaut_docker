@@ -1,6 +1,7 @@
 import Search from "../components/Search";
 import {useEffect, useState} from "react";
 import Cart from "./Cart";
+import {json} from "react-router-dom";
 
 // import Products from "../components/products/Products";
 
@@ -23,9 +24,13 @@ function Home() {
 
                 const productsWithPhotos = await Promise.all(data.map(async product => {
                     const photoRes = await fetch(`http://${process.env.REACT_APP_SERVER_HOST}:${process.env.REACT_APP_SERVER_PORT}/product/get_photo/?id=${product.id}`);
+                    console.log("photo res", photoRes)
                     const photoData = await photoRes.json();
-                    if (photoData.photo) {
-                        const photoUrl = createPhotoUrl(photoData.photo.data);
+                    console.log("photo data", photoData)
+                    if (photoData.res_photo) {
+                        const photo = photoData.res_photo.data
+                        console.log(photo)
+                        const photoUrl = createPhotoUrl(photo);
                         return { ...product, photo: photoUrl }; // Добавляем поле photo к продукту
                     } else {
                         return { ...product, photo: null }; // Добавляем null, если фотография отсутствует
